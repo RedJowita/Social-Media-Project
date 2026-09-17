@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Search</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="stars" aria-hidden="true"></div>
+  <div class="search-bar">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M10 2a8 8 0 015.996 13.646l4.387 4.387 1.414-1.414-4.387-4.387A8 8 0 1110 2zm0 2a6 6 0 104.243 10.243A6 6 0 0010 4z"/>
+    </svg>
+    <input type="text" placeholder="Search..." />
+  </div>
+
+  <div class="top-right-tools" aria-label="Quick actions">
+    <div class="tool-box" aria-hidden="true"></div>
+    <div class="tool-box" aria-hidden="true"></div>
+  </div>
+
+  <div class="drawer-tab" id="drawerHandle" aria-label="Toggle sidebar" role="button" tabindex="0"></div>
+
+  <aside class="side-drawer" id="sideDrawer" aria-label="Left sliding panel">
+    <div class="drawer-content">
+      <div class="circle-stack" id="circleStack" aria-live="polite"></div>
+      <button class="add-circle-btn" id="addCircleBtn" type="button" aria-label="Add a new circle">+</button>
+    </div>
+  </aside>
+
+  <script>
+    const drawer = document.getElementById('sideDrawer');
+    const drawerHandle = document.getElementById('drawerHandle');
+    const circleStack = document.getElementById('circleStack');
+    const addCircleBtn = document.getElementById('addCircleBtn');
+
+    function toggleDrawer() {
+      drawer.classList.toggle('open');
+      drawerHandle.classList.toggle('open');
+    }
+
+    function openCirclePage(name) {
+      const serverUrl = 'http://localhost:3000/server/' + encodeURIComponent(name || 'circle');
+      window.open(serverUrl, '_blank');
+    }
+
+    function addCircle(name) {
+      const item = document.createElement('div');
+      item.className = 'circle-item';
+      item.setAttribute('role', 'button');
+      item.setAttribute('tabindex', '0');
+
+      const badge = document.createElement('div');
+      badge.className = 'circle-badge';
+      badge.textContent = name.charAt(0).toUpperCase();
+
+      const label = document.createElement('span');
+      label.className = 'circle-label';
+      label.textContent = name;
+
+      item.appendChild(badge);
+      item.appendChild(label);
+      circleStack.appendChild(item);
+
+      item.addEventListener('click', () => openCirclePage(name));
+      item.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openCirclePage(name);
+        }
+      });
+    }
+
+    addCircleBtn.addEventListener('click', () => {
+      const circleName = prompt('Name this circle:', 'Circle');
+      const trimmedName = circleName ? circleName.trim() : '';
+
+      if (!trimmedName) {
+        return;
+      }
+
+      addCircle(trimmedName);
+    });
+
+    drawerHandle.addEventListener('click', toggleDrawer);
+    drawerHandle.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        toggleDrawer();
+      }
+    });
+  </script>
+</body>
+</html>
